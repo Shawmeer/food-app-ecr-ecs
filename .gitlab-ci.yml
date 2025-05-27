@@ -14,6 +14,7 @@ deploy_to_ec2:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan $EC2_IP >> ~/.ssh/known_hosts
   script:
     - ssh ubuntu@$EC2_IP "
         cd $DEPLOY_DIR &&
