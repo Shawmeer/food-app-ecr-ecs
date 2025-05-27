@@ -1,5 +1,5 @@
 stages:
-  - deployy
+  - deploy
 
 deploy_to_ec2:
   stage: deploy
