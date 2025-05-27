@@ -1,0 +1,23 @@
+stages:
+  - deploy
+
+deploy_to_ec2:
+  stage: deploy
+  image: alpine:latest
+  only:
+    - main
+  variables:
+    DEPLOY_DIR: "/home/ubuntu/food-app"
+    GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
+  before_script:
+    - apk add --no-cache openssh-client git
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+  script:
+    - ssh ubuntu@$EC2_IP "
+        cd $DEPLOY_DIR &&
+        git pull origin main &&
+        docker-compose down || true &&
+        docker-compose up -d --build
+      "
