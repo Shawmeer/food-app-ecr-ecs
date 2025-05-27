@@ -19,6 +19,6 @@ deploy_to_ec2:
     - ssh ubuntu@$EC2_IP "
         cd $DEPLOY_DIR &&
         git pull origin main &&
-        docker-compose down || true &&
-        docker-compose up -d --build
+        sudo docker-compose down || true &&
+        sudo docker-compose up -d --build
       "
