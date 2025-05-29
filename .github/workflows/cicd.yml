@@ -45,6 +45,12 @@ jobs:
       env:
         AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
+    # ✅ Install Terraform
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.6.6  # You can adjust the version if needed
+
     - name: Terraform Init
       working-directory: ./terraform
       run: terraform init
