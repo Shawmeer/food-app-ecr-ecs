@@ -4,7 +4,7 @@ resource "aws_ecs_cluster" "this" {
 
 # IAM Role for ECS Tasks Execution
 resource "aws_iam_role" "ecs_task_execution" {
-  name = "ecsTaskExecutionRole"
+  name = "samir-ecs-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -22,6 +22,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
   role       = aws_iam_role.ecs_task_execution.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+
 # Task Definitions
 resource "aws_ecs_task_definition" "frontend" {
   family                   = "frontend-task"
@@ -33,12 +34,13 @@ resource "aws_ecs_task_definition" "frontend" {
 
   container_definitions = jsonencode([
     {
-      name      = "frontend"
-      image     = "${aws_ecr_repository.frontend.repository_url}:latest"
+      name         = "frontend"
+      image        = "${aws_ecr_repository.frontend.repository_url}:latest"
       portMappings = [{ containerPort = var.frontend_port }]
     }
   ])
 }
+
 resource "aws_ecs_task_definition" "backend" {
   family                   = "backend-task"
   network_mode             = "awsvpc"
@@ -65,6 +67,7 @@ resource "aws_ecs_task_definition" "backend" {
     }
   ])
 }
+
 # ECS Services
 resource "aws_ecs_service" "frontend" {
   name            = "frontend-service"
@@ -98,6 +101,7 @@ resource "aws_ecs_service" "backend" {
     security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = false
   }
+
   load_balancer {
     target_group_arn = aws_lb_target_group.backend.arn
     container_name   = "backend"
