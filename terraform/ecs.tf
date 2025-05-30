@@ -59,7 +59,7 @@ resource "aws_ecs_task_definition" "backend" {
         },
         {
           name  = "PORT"
-          value = toostring(var.backend_port)
+          value = tostring(var.backend_port)
         }
       ]
     }
