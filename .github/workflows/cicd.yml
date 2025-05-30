@@ -34,15 +34,15 @@ jobs:
         working-directory: ./terraform
         run: terraform init
 
-      - name: Import IAM Role (ecsTaskExecutionRole)
-        working-directory: ./terraform
-        run: |
-          terraform import aws_iam_role.ecs_task_execution ecsTaskExecutionRole || echo "Role already imported"
+    #   - name: Import IAM Role (ecsTaskExecutionRole)
+    #     working-directory: ./terraform
+    #     run: |
+    #       terraform import aws_iam_role.ecs_task_execution ecsTaskExecutionRole || echo "Role already imported"
 
       - name: Terraform Plan
         working-directory: ./terraform
         run: |
-          terraform plan \
+          terraform plan -upgrade \
             -var="frontend_image_tag=${{ github.sha }}" \
             -var="backend_image_tag=${{ github.sha }}" \
             -var="mongo_uri=${{ secrets.MONGO_URI }}" \
