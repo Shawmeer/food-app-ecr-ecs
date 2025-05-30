@@ -1,4 +1,4 @@
-name: Deploy to AWS ECSs
+name: Deploy to AWS ECS
 
 on:
   push:
@@ -25,22 +25,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and push frontend Docker image
-        run: |
-          FRONTEND_IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_FRONTEND_REPO }}:${{ github.sha }}"
-          docker build -t $FRONTEND_IMAGE ./frontend
-          docker push $FRONTEND_IMAGE
-
-      - name: Build and push backend Docker image
-        run: |
-          BACKEND_IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_BACKEND_REPO }}:${{ github.sha }}"
-          docker build -t $BACKEND_IMAGE ./backend
-          docker push $BACKEND_IMAGE
-
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -50,14 +34,19 @@ jobs:
         working-directory: ./terraform
         run: terraform init
 
+      - name: Import IAM Role (ecsTaskExecutionRole)
+        working-directory: ./terraform
+        run: |
+          terraform import aws_iam_role.ecs_task_execution ecsTaskExecutionRole || echo "Role already imported"
+
       - name: Terraform Plan
         working-directory: ./terraform
         run: |
-                terraform plan \
-                 -var="frontend_image_tag=${{ github.sha }}" \
-                -var="backend_image_tag=${{ github.sha }}" \
-                 -var="mongo_uri=${{ secrets.MONGO_URI }}" \
-                  -out=tfplan
+          terraform plan \
+            -var="frontend_image_tag=${{ github.sha }}" \
+            -var="backend_image_tag=${{ github.sha }}" \
+            -var="mongo_uri=${{ secrets.MONGO_URI }}" \
+            -out=tfplan
 
       - name: Terraform Apply
         working-directory: ./terraform
