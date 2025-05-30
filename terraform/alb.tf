@@ -12,6 +12,15 @@ resource "aws_lb_target_group" "frontend" {
   protocol    = "HTTP"
   vpc_id      = module.vpc.vpc_id
   target_type = "ip"
+
+  health_check {
+    path                = "/"  # Change if your app exposes a health endpoint
+    protocol            = "HTTP"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
 }
 
 resource "aws_lb_target_group" "backend" {
@@ -20,6 +29,15 @@ resource "aws_lb_target_group" "backend" {
   protocol    = "HTTP"
   vpc_id      = module.vpc.vpc_id
   target_type = "ip"
+
+  health_check {
+    path                = "/api/health"  # Or "/" depending on your app
+    protocol            = "HTTP"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
 }
 
 resource "aws_lb_listener" "frontend_listener" {
@@ -32,6 +50,7 @@ resource "aws_lb_listener" "frontend_listener" {
     target_group_arn = aws_lb_target_group.frontend.arn
   }
 }
+
 resource "aws_lb_listener_rule" "backend_rule" {
   listener_arn = aws_lb_listener.frontend_listener.arn
   priority     = 10
