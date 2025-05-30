@@ -31,25 +31,20 @@ jobs:
 
     - name: Build and push frontend Docker image
       run: |
-        FRONTEND_IMAGE="${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_FRONTEND_REPO }}:${{ github.sha }}"
+        FRONTEND_IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_FRONTEND_REPO }}:${{ github.sha }}"
         docker build -t $FRONTEND_IMAGE ./frontend
         docker push $FRONTEND_IMAGE
-      env:
-        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
     - name: Build and push backend Docker image
       run: |
-        BACKEND_IMAGE="${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_BACKEND_REPO }}:${{ github.sha }}"
+        BACKEND_IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_BACKEND_REPO }}:${{ github.sha }}"
         docker build -t $BACKEND_IMAGE ./backend
         docker push $BACKEND_IMAGE
-      env:
-        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
-    # ✅ Install Terraform
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3
       with:
-        terraform_version: 1.6.6  # You can adjust the version if needed
+        terraform_version: 1.6.6
 
     - name: Terraform Init
       working-directory: ./terraform
@@ -57,10 +52,7 @@ jobs:
 
     - name: Terraform Plan
       working-directory: ./terraform
-      run: terraform plan \
-        -var "frontend_image_tag=${{ github.sha }}" \
-        -var "backend_image_tag=${{ github.sha }}" \
-        -out=tfplan
+      run: terraform plan -var "frontend_image_tag=${{ github.sha }}" -var "backend_image_tag=${{ github.sha }}" -out=tfplan
 
     - name: Terraform Apply
       working-directory: ./terraform
