@@ -52,11 +52,12 @@ jobs:
 
       - name: Terraform Plan
         working-directory: ./terraform
-        run: terraform plan \
-          -var "frontend_image_tag=${{ github.sha }}" \
-          -var "backend_image_tag=${{ github.sha }}" \
-          -var "mongo_uri=${{ secrets.MONGO_URI }}" \
-          -out=tfplan
+        run: |
+                terraform plan \
+                 -var="frontend_image_tag=${{ github.sha }}" \
+                -var="backend_image_tag=${{ github.sha }}" \
+                 -var="mongo_uri=${{ secrets.MONGO_URI }}" \
+                  -out=tfplan
 
       - name: Terraform Apply
         working-directory: ./terraform
