@@ -4,7 +4,7 @@ resource "aws_ecs_cluster" "this" {
 
 # IAM Role for ECS Tasks Execution
 resource "aws_iam_role" "ecs_task_execution" {
-  name = "samir-ecs-role"
+  name = "samir-ecs-role1"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
