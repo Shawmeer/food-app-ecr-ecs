@@ -20,3 +20,12 @@ variable "frontend_port" {
   type        = number
   default     = 3000
 }
+variable "frontend_image_tag" {
+  description = "Tag of the frontend Docker image"
+  type        = string
+}
+
+variable "backend_image_tag" {
+  description = "Tag of the backend Docker image"
+  type        = string
+}
