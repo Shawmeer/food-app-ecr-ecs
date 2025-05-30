@@ -32,7 +32,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: ./terraform
-        run: terraform init
+        run: terraform init -upgrade
 
     #   - name: Import IAM Role (ecsTaskExecutionRole)
     #     working-directory: ./terraform
@@ -42,7 +42,7 @@ jobs:
       - name: Terraform Plan
         working-directory: ./terraform
         run: |
-          terraform plan -upgrade \
+          terraform plan  \
             -var="frontend_image_tag=${{ github.sha }}" \
             -var="backend_image_tag=${{ github.sha }}" \
             -var="mongo_uri=${{ secrets.MONGO_URI }}" \
