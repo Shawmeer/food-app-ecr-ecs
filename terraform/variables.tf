@@ -3,10 +3,11 @@ variable "region" {
 }
 
 variable "mongo_uri" {
-  description = "MongoDB connection string"
   type        = string
+  description = "MongoDB connection string"
   sensitive   = true
 }
+
 
 variable "backend_port" {
   description = "Backend service port"
